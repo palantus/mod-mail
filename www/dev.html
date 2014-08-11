@@ -23,7 +23,7 @@
 			background-color: white; 
 			padding: 5px; 
 			box-shadow: 5px 5px 5px #000; 
-			white-space: pre;
+			/*white-space: pre;*/
 			margin-bottom: 20px;
 		}
 	</style>
@@ -34,7 +34,7 @@
 			for(i in res){
 				var from = $("<div/>", {html: "<b>From: </b>" + res[i].from});
 				var subject = $("<div/>", {html: "<b>Subject: </b>" + res[i].title});
-				var body = $("<div/>", {html: "<br/>" + res[i].body});
+				var body = $("<div/>", {class: "mailbody", html: "<br/>" + res[i].bodyHTML});
 
 				var container = $("<div/>", {class: "mailcontainer"});
 				container.append(from);
