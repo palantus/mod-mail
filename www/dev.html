@@ -1,0 +1,45 @@
+<!doctype html>
+<head>
+<meta charset="utf-8" />
+	<title>Mail</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=10,IE=9,IE=8,IE=edge" />
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<link rel="shortcut icon" sizes="1024x1024" href="/mail/img/mail.png">
+	
+	<link rel="stylesheet" type="text/css" href="/mail/css/mail.css" />
+	
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/all.js"></script>
+	<script src="/mail/js/mail.js"></script>
+	
+	<style>
+		body{background-color: lightgrey}
+		.mailcontainer{background-color: white; padding: 5px; box-shadow: 5px 5px 5px #000; white-space: pre;}
+	</style>
+
+	<script>
+	$(function() {
+		request({module:"mail", type: "GetRecentMailList"}, function(res){
+			for(i in res){
+				var from = $("<div/>", {html: "<b>From: </b>" + res[i].from});
+				var subject = $("<div/>", {html: "<b>Subject: </b>" + res[i].title});
+				var body = $("<div/>", {html: "<br/>" + res[i].body});
+
+				var container = $("<div/>", {class: "mailcontainer"});
+				container.append(from);
+				container.append(subject);
+				container.append(body);
+
+				$("#mails").append(container);
+			}
+		});
+	});
+
+	</script>
+</head>
+<body>
+	<div id="mails"></div>
+</body>
+</html>

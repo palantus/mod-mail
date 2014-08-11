@@ -1,0 +1,4 @@
+{
+	"main" : "MailModule.js",
+	"deps": ["database", "user"]
+}
