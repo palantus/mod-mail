@@ -17,7 +17,7 @@ MailModule.prototype.onMessage = function (req, callback) {
 
 	switch(req.body.type){
 		case "GetRecentMailList" :
-			client.zrange("mails:ankri.dk:ahk", 0, -1, function(err, mailIds){
+			client.zrevrange("mails:ankri.dk:ahk", 0, -1, function(err, mailIds){
 				var multi = client.multi();
 
 				mailIds.forEach(function (id, i) {
