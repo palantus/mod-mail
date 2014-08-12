@@ -69,7 +69,7 @@ MailModule.prototype.onMessage = function (req, callback) {
 				callback({error: "Invalid e-mail address"});
 				break;
 			}
-			client.get("user:" + session.userId + ":inbox", function(err, inboxId){
+			this.getUserInbox(session.userId, function(inboxId){
 				if(inboxId > 0){
 					client.setnx("mailalias:" + req.body.alias, inboxId, function(err, success){
 						if(err)
@@ -95,5 +95,19 @@ MailModule.prototype.onMessage = function (req, callback) {
 			break;
 	}
 };		
+
+MailModule.prototype.getUserInbox = function (userId, callback) {
+	client.get("user:" + userId + ":inbox", function(err, inboxId){
+		if(inboxId > 0){
+			callback(inboxId);
+		} else {
+			client.incr("inboxnextid", function(err, id){
+				client.set("user:" + userId + ":inbox", id, function(){
+					callback(id);	
+				})
+			})
+		}
+	});
+}
  
 module.exports = MailModule;
