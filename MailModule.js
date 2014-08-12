@@ -32,22 +32,23 @@ MailModule.prototype.onMessage = function (req, callback) {
 
 	switch(req.body.type){
 		case "GetRecentMailList" :
-			var inbox = "inbox:1:mails";
-			if(req.body.isSpam == true)
-				inbox = "inbox:spam";
-			
-			client.zrevrange(inbox, 0, -1, function(err, mailIds){
-				var multi = client.multi();
-
-				mailIds.forEach(function (id, i) {
-		            multi.hgetall("mail:" + id);
-		        });
+			this.getUserInbox(session.userId, function(inboxId){
+				var inbox = "inbox:" + inboxId + ":mails";
+				if(req.body.isSpam == true)
+					inbox = "inbox:spam";
 				
-				multi.exec(function(err, mails){
-					callback(mails);
+				client.zrevrange(inbox, 0, -1, function(err, mailIds){
+					var multi = client.multi();
+
+					mailIds.forEach(function (id, i) {
+			            multi.hgetall("mail:" + id);
+			        });
+					
+					multi.exec(function(err, mails){
+						callback(mails);
+					});
 				});
 			});
-			
 			break;
 		case "GetAliases" :
 			client.smembers("user:" + session.userId + ":mailaliases", function(err, res){
