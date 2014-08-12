@@ -1,0 +1,21 @@
+
+div.mailcontainer{
+	margin-top: 20px;
+	background-color: white; 
+	padding: 5px; 
+	box-shadow: 5px 5px 5px #000; 
+	margin-bottom: 20px;
+}
+div.mailcontainer div.mailbody{
+	margin-top: 10px;
+}
+div.mailcontainer .mailbody.plain{
+	white-space: pre;
+}
+
+div.mailheader span{
+	width: 70px;
+	display: inline-block;
+	font-weight: bold;
+}
+#errors{color: red; margin: 5px;}

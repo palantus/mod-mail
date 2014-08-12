@@ -7,9 +7,7 @@
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<link rel="shortcut icon" sizes="1024x1024" href="/mail/img/mail.png">
-	
-	<!--<link rel="stylesheet" type="text/css" href="/mail/css/mail.css" />-->
-	
+		
 	<!-- To avoid background blinking on refresh -->
 	<style>html{background-color: lightgrey}</style>
 
@@ -19,6 +17,7 @@
 	
 	<script>
 		request({module:"mail", type: "GetRecentMailList", isSpam: getUrlVar("spam") == "true"}, function(res){
+			var foundAny = false;
 			for(i in res){
 				var isHTML = res[i].bodyHTML != "" ? true : false;
 
@@ -38,34 +37,29 @@
 				container.append(body);
 
 				$("#mails").append(container);
+				foundAny = true;
 			}
+
+			if(!foundAny)
+				$("#mails").append("<h4>Empty inbox...</h4>");
+		}, function(err){
+			$(function(){
+				$("#errors").html(err.error);
+			})
 		});
 	</script>
 
-	<style>
-		div.mailcontainer{
-			margin-top: 20px;
-			background-color: white; 
-			padding: 5px; 
-			box-shadow: 5px 5px 5px #000; 
-			margin-bottom: 20px;
-		}
-		div.mailcontainer div.mailbody{
-			margin-top: 10px;
-		}
-		div.mailcontainer .mailbody.plain{
-			white-space: pre;
-		}
+	<link rel="stylesheet" type="text/css" href="/mail/css/mail.css" />
 
-		div.mailheader span{
-			width: 70px;
-			display: inline-block;
-			font-weight: bold;
-		}
-	</style>
 </head>
 <body>
-	<a href="/user/login.html"><button>Log in/out</button></a><a href="/mail/setup.html"><button>Setup</button></a><br/>
+	<a href="/mail/dev.html"><button>Inbox</button></a>
+	<a href="/mail/dev.html?spam=true"><button>Spam</button></a>
+	<a href="/user/login.html?redirectTo=/mail/dev.html"><button>Log in/out</button></a>
+	<a href="/mail/setup.html"><button>Setup</button></a>
+	<br/>
+	
+	<div id="errors"></div>
 	<div id="mails"></div>
 </body>
 </html>

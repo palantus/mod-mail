@@ -18,6 +18,7 @@ MailModule.prototype.init = function(fw, onFinished) {
 }
 
 MailModule.prototype.onMessage = function (req, callback) {
+	var t = this;
 	if(typeof(req.body.type) !== "string"){
 		callback({error: "Invalid request"});
 		return;
@@ -32,23 +33,24 @@ MailModule.prototype.onMessage = function (req, callback) {
 
 	switch(req.body.type){
 		case "GetRecentMailList" :
-			this.getUserInbox(session.userId, function(inboxId){
-				var inbox = "inbox:" + inboxId + ":mails";
-				if(req.body.isSpam == true)
-					inbox = "inbox:spam";
-				
-				client.zrevrange(inbox, 0, -1, function(err, mailIds){
-					var multi = client.multi();
-
-					mailIds.forEach(function (id, i) {
-			            multi.hgetall("mail:" + id);
-			        });
-					
-					multi.exec(function(err, mails){
-						callback(mails);
-					});
+			if(req.body.isSpam == true){
+				this.fw.modules["user"].hasPermission(session.sessionId, "admin", function(hasPermission){
+					if(hasPermission){
+						t.getMails("inbox:spam", 0, 20, function(mails){
+							callback(mails);
+						})
+					} else {
+						callback({error: "You do not have permission to access the spam folder"});
+					}
 				});
-			});
+			} else {
+				this.getUserInbox.call(this, session.userId, function(inboxId){
+					var inbox = "inbox:" + inboxId + ":mails";
+					t.getMails(inbox, 0, 20, function(mails){
+						callback(mails);
+					})
+				});
+			}
 			break;
 		case "GetAliases" :
 			client.smembers("user:" + session.userId + ":mailaliases", function(err, res){
@@ -95,7 +97,21 @@ MailModule.prototype.onMessage = function (req, callback) {
 			callback({success: true});
 			break;
 	}
-};		
+};
+
+MailModule.prototype.getMails = function (inbox, start, end, callback) {
+	client.zrevrange(inbox, start, end, function(err, mailIds){
+		var multi = client.multi();
+
+		mailIds.forEach(function (id, i) {
+            multi.hgetall("mail:" + id);
+        });
+		
+		multi.exec(function(err, mails){
+			callback(mails);
+		});
+	});
+}
 
 MailModule.prototype.getUserInbox = function (userId, callback) {
 	client.get("user:" + userId + ":inbox", function(err, inboxId){
