@@ -14,8 +14,13 @@ div.mailcontainer .mailbody.plain{
 }
 
 div.mailheader span{
-	width: 70px;
+	width: 100px;
 	display: inline-block;
 	font-weight: bold;
 }
+div.mailattachment{
+	margin-left: 10px;
+	margin-right: 10px;
+}
+
 #errors{color: red; margin: 5px;}

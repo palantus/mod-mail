@@ -29,9 +29,19 @@
 				var from = $("<div/>", {html: "<span>From: </span>" + res[i].from});
 				var subject = $("<div/>", {html: "<span>Subject: </span>" + res[i].title});
 
+				var attachments = $("<div/>", {class: "mailattachments"});
+				attachments.append($("<span></span>", {html: "Attachments: "}));
+				for(var a in res[i].attachments){
+					//var attachment = $("<div/>", {class: "mailattachment"});
+					attachments.append($("<a/>", {html: res[i].attachments[a].filename, href: "/request?module=mail&type=GetAttachment&file=" + res[i].attachments[a].downloadHash}));
+					//attachments.append(attachment)
+				}
+
 				header.append(from);
 				header.append(to);
 				header.append(subject);
+				if(res[i].numAttachments > 0)
+					header.append(attachments);
 
 				var body = $("<div/>", {class: "mailbody" + (isHTML?"":" plain"), html: (isHTML ? res[i].bodyHTML : res[i].bodyPlain)});
 

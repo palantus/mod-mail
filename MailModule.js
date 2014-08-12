@@ -8,8 +8,10 @@ var redis = require("redis"),
 client = redis.createClient();
 
 var validator = require("validator");
+var fs = require("fs")
 
 var MailModule = function () {
+	this.authorizedDownloadHashes = [];
 };
 
 MailModule.prototype.init = function(fw, onFinished) {
@@ -17,11 +19,42 @@ MailModule.prototype.init = function(fw, onFinished) {
 	onFinished.call(this);
 }
 
-MailModule.prototype.onMessage = function (req, callback) {
+MailModule.prototype.onMessage = function (req, callback, res) {
 	var t = this;
 	if(typeof(req.body.type) !== "string"){
 		callback({error: "Invalid request"});
 		return;
+	}
+
+	/* Callbacks not requiring login */
+	switch(req.body.type){
+		case "GetAttachment" :
+			if(typeof req.body.file !== "string" || req.body.file.length < 1){
+				callback({error: "No file"});
+				return;
+			}
+			if(req.body.file in this.authorizedDownloadHashes){
+				client.hgetall(this.authorizedDownloadHashes[req.body.file], function(err, attr){
+					if(attr && attr.file){
+						//fs.readFile('../haraka_attachments/' + attr.file, function (err, data) {
+							if (err) 
+								throw err;
+
+							res.writeHead(200, {
+								'Content-Type':attr.contentType,
+								'Content-Disposition': 'attachment; filename=' + attr.filename
+							});
+							//res.end(data);
+							fs.createReadStream('../haraka_attachments/' + attr.file).pipe(res);
+						//});
+					} else {
+						callback({error: "Invalid file"})	
+					}
+				});
+			} else {
+				callback({error: "Invalid download link"});
+			}
+			return;
 	}
 
 	if(!this.fw.modules["user"].loggedIn(req.body.sessionId)){
@@ -100,6 +133,7 @@ MailModule.prototype.onMessage = function (req, callback) {
 };
 
 MailModule.prototype.getMails = function (inbox, start, end, callback) {
+	var t = this;
 	client.zrevrange(inbox, start, end, function(err, mailIds){
 		var multi = client.multi();
 
@@ -108,7 +142,34 @@ MailModule.prototype.getMails = function (inbox, start, end, callback) {
         });
 		
 		multi.exec(function(err, mails){
-			callback(mails);
+
+			/* Attachments */
+			var multi = client.multi();
+			for(i in mails){
+				mails[i].attachments = [];
+
+				if(!isNaN(mails[i].numAttachments)){
+					for(var a = 1; a <= mails[i].numAttachments; a++){
+						multi.hgetall("mail:" + mails[i].id + ":attachment:" + a);
+					}
+					
+				}
+			}
+			multi.exec(function(err, attachments){
+				for(i in attachments){
+					var a = attachments[i];
+					if(a == null || isNaN(a.mailId) || isNaN(a.num))
+						continue;
+
+					a.downloadHash = Math.random().toString(36).substr(2, 12);
+					t.authorizedDownloadHashes[a.downloadHash] = "mail:" + a.mailId + ":attachment:" + a.num;
+
+					var mailIdx = mailIds.indexOf(a.mailId);
+					mails[mailIdx].attachments.push(a);
+				}
+
+				callback(mails);	
+			})
 		});
 	});
 }
