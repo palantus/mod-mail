@@ -1,0 +1,77 @@
+<!doctype html>
+<head>
+<meta charset="utf-8" />
+	<title>Mail - setup</title>
+	<meta http-equiv="X-UA-Compatible" content="IE=10,IE=9,IE=8,IE=edge" />
+	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<meta name="mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<link rel="shortcut icon" sizes="1024x1024" href="/mail/img/mail.png">
+	
+	<!-- To avoid background blinking on refresh -->
+	<style>html{background-color: lightgrey}</style>
+	
+	<!--<link rel="stylesheet" type="text/css" href="/mail/css/mail.css" />-->
+	<link rel="stylesheet" type="text/css" href="/css/framework_merged.css" />
+	
+	<script src="/js/jquery.min.js"></script>
+	<script src="/js/all.js"></script>
+	<!--<script src="/mail/js/mail.js"></script>-->
+	
+	<style>
+		.mailcontainer{
+			background-color: white; 
+			padding: 5px; 
+			box-shadow: 5px 5px 5px #000; 
+			/*white-space: pre;*/
+			margin-bottom: 20px;
+		}
+	</style>
+
+	<script>
+		request({module: "mail", type: "GetAliases"}, function(data){
+			var tableCreator = new TableCreator();
+			tableCreator.init({	
+				elementId: "aliases",
+				clickable: false,
+				style: {width: "500px"},
+				hideFooter: true,
+				initialData: data,
+				columns: [
+							{title: "Alias", dataKey: "alias"}
+						 ],
+				
+				createRecord: {
+					fields: [
+								{name: "alias", title: "Full alias (e.g. 'mail@domain.net'):"}
+							],
+					validate: function(record){return record.alias !== "";},
+					onCreate: function(record, callback){
+						request({module: "mail", type: "AddAlias", alias: record.alias}, function(res){
+							callback();
+						});
+					}
+				},
+				deleteRecord: {
+					onDelete: function(record, callback){
+						request({module: "mail", type: "RemoveAlias", alias: record.alias}, function(res){
+							callback();
+						});
+					}
+				},
+				dataSource: function(onData){
+					request({module: "mail", type: "GetAliases"}, onData);
+				}
+			});
+			tableCreator.draw();
+		});
+
+	</script>
+</head>
+<body>
+	<a href="/mail/dev.html"><button>Inbox</button></a><br/>
+
+	<h2>Aliases</h2>
+	<div id="aliases"></div>
+</body>
+</html>
