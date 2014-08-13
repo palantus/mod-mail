@@ -31,11 +31,14 @@
 
 				var attachments = $("<div/>", {class: "mailattachments"});
 				attachments.append($("<span></span>", {html: "Attachments: "}));
+				var att = $("<div/>");
+				
 				for(var a in res[i].attachments){
 					//var attachment = $("<div/>", {class: "mailattachment"});
-					attachments.append($("<a/>", {html: res[i].attachments[a].filename, href: "/request?module=mail&type=GetAttachment&file=" + res[i].attachments[a].downloadHash}));
+					att.append($("<a/>", {html: res[i].attachments[a].filename, href: "/request?module=mail&type=GetAttachment&file=" + res[i].attachments[a].downloadHash}));
 					//attachments.append(attachment)
 				}
+				attachments.append(att)
 
 				header.append(from);
 				header.append(to);
@@ -66,11 +69,12 @@
 
 </head>
 <body>
-	<a href="/mail/dev.html"><button>Inbox</button></a>
-	<a href="/mail/dev.html?spam=true"><button>Spam</button></a>
-	<a href="/user/login.html?redirectTo=/mail/dev.html"><button>Log in/out</button></a>
-	<a href="/mail/setup.html"><button>Setup</button></a>
-	<br/>
+	<div id="topmenu">
+		<a href="/mail/dev.html"><button>Inbox</button></a>
+		<a href="/mail/dev.html?spam=true"><button>Spam</button></a>
+		<a href="/user/login.html?redirectTo=/mail/dev.html"><button>Log in/out</button></a>
+		<a href="/mail/setup.html"><button>Setup</button></a>
+	</div>
 	
 	<div id="errors"></div>
 	<div id="mails"></div>
