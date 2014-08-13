@@ -31,7 +31,7 @@
 			tableCreator.init({	
 				elementId: "aliases",
 				clickable: false,
-				style: {width: "500px"},
+				style: {"max-width": "500px", "background-color": "white", "box-shadow" : "3px 3px 10px black"},
 				hideFooter: true,
 				initialData: data,
 				columns: [
@@ -81,9 +81,11 @@
 		-->
 	</div>
 
+	<div id="contentStart"></div>
+
 	<div id="errors"></div>
 
-	<h2>Aliases</h2>
+	<h2 class="title">Aliases</h2>
 	<div id="aliases"></div>
 </body>
 </html>
