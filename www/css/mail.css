@@ -4,6 +4,8 @@ html{
 
 body{
 	overflow-y: hidden;
+	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+	font-size: 13px;
 }
 
 #topmenu {
@@ -29,7 +31,7 @@ body{
 
 #topmenu button {
 	width: 100px;
-	height: 50px;
+	height: 40px;
     white-space: normal;
     padding: 0px;
     background-color:#FFF;
@@ -61,7 +63,7 @@ body{
 	overflow-x: hidden;
 	overflow-y: scroll;
 	
-	padding-top: 60px;
+	padding-top: 50px;
 	position:absolute;
 	top: 0px;
 	bottom: 0px;
@@ -90,6 +92,12 @@ div.card .mailbody.plain{
 div.mailheader table tr td:first-child{
 	font-weight: bold;
 }
+
+div.mailheader table td{
+	padding-top: 0px;
+	padding-bottom: 0px;
+}
+
 div.mailattachment{
 	margin-left: 10px;
 	margin-right: 10px;
