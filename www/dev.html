@@ -17,7 +17,9 @@
 	<script src="/js/jquery.min.js"></script>
 	<script src="/js/framework.js"></script>
 	<script src="/mail/js/mail.js"></script>
+	<script src="/js/tablecreator.js"></script>
 
+	<link rel="stylesheet" type="text/css" href="/css/tablecreator.css" />
 	<link rel="stylesheet" type="text/css" href="/mail/css/mail.css" />
 
 </head>
@@ -25,12 +27,12 @@
 	<div id="topmenu">
 		<button onclick="isSpamFolder = false; reloadMails();">Inbox</button><!--
 		--><button onclick="isSpamFolder = true; reloadMails();">Spam</button><!--
-		--><button onclick="window.location='/user/login.html?redirectTo=/mail/dev.html'">Log in/out</button><!--
-		--><button onclick="window.location='/mail/setup.html'">Setup</button><!--
+		--><button onclick="showLogin()">Log in/out</button><!--
+		--><button onclick="showSetup()">Setup</button><!--
 		-->
 	</div>
 	
 	<div id="contentStart"></div>
-	<div id="errors"></div>
+	<div id="errors" class="hide"></div>
 </body>
 </html>
