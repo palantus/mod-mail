@@ -23,4 +23,10 @@ div.mailattachment{
 	margin-right: 10px;
 }
 
+.mailattachments a {
+	margin-right: 12px;
+	color: black;
+	text-decoration: none;
+}
+
 #errors{color: red; margin: 5px;}
