@@ -7,8 +7,8 @@ body{
 }
 
 #topmenu {
-	margin-bottom: 20px;
-	position: fixed;
+	/*margin-bottom: 20px;*/
+	position: absolute;
 	top: 0px;
 	left: 0px;
     
@@ -57,25 +57,27 @@ body{
 	height: 10px;
 }
 
-#mails{
+.mails{
 	overflow-x: hidden;
 	overflow-y: scroll;
 	
+	padding-top: 60px;
 	position:absolute;
-	top: 60px;
+	top: 0px;
 	bottom: 0px;
 	left: 0px;
 	right: 0px;
 	padding-left: 5px;
 	padding-right: 8px;
+	background: transparent;
 }
 
 div.mailcontainer{
-	margin-top: 20px;
+	/*margin-top: 20px;*/
 	background-color: white; 
 	padding: 5px; 
-	box-shadow: 5px 5px 5px #000; 
-	margin-bottom: 20px;
+	box-shadow: 3px 3px 7px #222; 
+	margin-bottom: 12px;
 	overflow-x: auto;
 }
 div.mailcontainer div.mailbody{
@@ -106,17 +108,28 @@ div.mailattachment{
 
 /* Mail Transition */
 .mailcontainer{
-	-webkit-transition: left 0.5s; /* For Safari 3.1 to 6.0 */
-    transition: left 0.5s;
+	-webkit-transition: left 0.3s; /* For Safari 3.1 to 6.0 */
+    transition: left 0.3s;
+    transition-timing-function:ease-out;
     position: relative;
-    left: -1000px;
+    left: 2000px;
+    z-index: 1;
 }
 
 .mailcontainer.show{
 	left: 0px;
+	z-index: 2;
+	display: block;
+}
+.mailcontainer.hide{
+	left: -2000px;
+	z-index: 0;
+    transition-timing-function:ease-in;
 }
 
-/* Body transition */
+.mails.hide{display:none;}
+
+/* Mail body transition */
 div.mailcontainer div.mailbody{
 	display: none;
 }

@@ -16,102 +16,15 @@
 
 	<script src="/js/jquery.min.js"></script>
 	<script src="/js/framework.js"></script>
-	<!--<script src="/mail/js/mail.js"></script>-->
-	
-	<script>
-		request({module:"mail", type: "GetRecentMailList", isSpam: getUrlVar("spam") == "true"}, function(res){
-			var foundAny = false;
-			for(i in res){
-				var isHTML = res[i].bodyHTML != "" ? true : false;
-
-				var headerTab = $("<table>");
-				var row1 =  $("<tr/>");
-				row1.append($("<td/>", {html: "From:"}));
-				row1.append($("<td/>", {html: res[i].from}));
-
-				var row2 =  $("<tr/>");
-				row2.append($("<td/>", {html: "To:"}));
-				row2.append($("<td/>", {html: res[i].to}));
-
-				var row3 =  $("<tr/>");
-				row3.append($("<td/>", {html: "Subject:"}));
-				row3.append($("<td/>", {html: res[i].title}));
-
-				var att = $("<div/>");
-				for(var a in res[i].attachments){
-					att.append($("<a/>", {html: res[i].attachments[a].filename, href: "/request?module=mail&type=GetAttachment&file=" + res[i].attachments[a].downloadHash}));
-				}
-
-				var row4 =  $("<tr/>");
-				row4.append($("<td/>", {html: "Attachments:"}));
-				row4.append($("<td/>", {html: att, class: "mailattachments"}));
-
-					/*
-				var header = $("<div/>", {class: "mailheader"});
-				var to = $("<div/>", {html: "<span>To: </span>" + res[i].to});
-				var from = $("<div/>", {html: "<span>From: </span>" + res[i].from});
-				var subject = $("<div/>", {html: "<span>Subject: </span>" + res[i].title});
-
-				var attachments = $("<div/>", {class: "mailattachments"});
-				attachments.append($("<span></span>", {html: "Attachments: "}));
-				var att = $("<div/>");
-				
-				for(var a in res[i].attachments){
-					//var attachment = $("<div/>", {class: "mailattachment"});
-					att.append($("<a/>", {html: res[i].attachments[a].filename, href: "/request?module=mail&type=GetAttachment&file=" + res[i].attachments[a].downloadHash}));
-					//attachments.append(attachment)
-				}
-				attachments.append(att)
-
-				header.append(from);
-				header.append(to);
-				header.append(subject);
-				if(res[i].numAttachments > 0)
-					header.append(attachments);
-				*/
-
-				var header = $("<div/>", {class: "mailheader"});
-				headerTab.append(row1);
-				headerTab.append(row2);
-				headerTab.append(row3);
-				headerTab.append(row4);
-				header.append(headerTab);
-
-				var body = $("<div/>", {class: "mailbody" + (isHTML?"":" plain"), html: (isHTML ? res[i].bodyHTML : res[i].bodyPlain)});
-
-				var container = $("<div/>", {class: "mailcontainer"});
-				container.append(header);
-				container.append(body);
-
-				container.click(function(e){
-					$(this).find(".mailbody").toggleClass("show");
-				})
-
-				$("#mails").append(container);
-
-				setTimeout(function(){
-					$(".mailcontainer:not(.show)").first().addClass("show");
-				}, (i * 100) + 1);
-
-				foundAny = true;
-			}
-
-			if(!foundAny)
-				$("#mails").append("<h4>Empty inbox...</h4>");
-		}, function(err){
-			$(function(){
-				$("#errors").html(err.error);
-			})
-		});
-	</script>
+	<script src="/mail/js/mail.js"></script>
 
 	<link rel="stylesheet" type="text/css" href="/mail/css/mail.css" />
 
 </head>
 <body>
 	<div id="topmenu">
-		<button onclick="window.location='/mail/dev.html'">Inbox</button><!--
-		--><button onclick="window.location='/mail/dev.html?spam=true'">Spam</button><!--
+		<button onclick="isSpamFolder = false; reloadMails();">Inbox</button><!--
+		--><button onclick="isSpamFolder = true; reloadMails();">Spam</button><!--
 		--><button onclick="window.location='/user/login.html?redirectTo=/mail/dev.html'">Log in/out</button><!--
 		--><button onclick="window.location='/mail/setup.html'">Setup</button><!--
 		-->
@@ -119,6 +32,5 @@
 	
 	<div id="contentStart"></div>
 	<div id="errors"></div>
-	<div id="mails" class="org"></div>
 </body>
 </html>

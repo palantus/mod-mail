@@ -69,7 +69,7 @@ MailModule.prototype.onMessage = function (req, callback, res) {
 			if(req.body.isSpam == true){
 				this.fw.modules["user"].hasPermission(session.sessionId, "admin", function(hasPermission){
 					if(hasPermission){
-						t.getMails("inbox:spam", 0, 20, function(mails){
+						t.getMails("inbox:spam", 0, 9, function(mails){
 							callback(mails);
 						})
 					} else {
@@ -79,7 +79,7 @@ MailModule.prototype.onMessage = function (req, callback, res) {
 			} else {
 				this.getUserInbox.call(this, session.userId, function(inboxId){
 					var inbox = "inbox:" + inboxId + ":mails";
-					t.getMails(inbox, 0, 20, function(mails){
+					t.getMails(inbox, 0, 9, function(mails){
 						callback(mails);
 					})
 				});
