@@ -3,7 +3,7 @@
 <meta charset="utf-8" />
 	<title>Mail</title>
 	<meta http-equiv="X-UA-Compatible" content="IE=10,IE=9,IE=8,IE=edge" />
-	<meta name="viewport" content="width=device-width, user-scalable=no">
+	<meta name="viewport" content="width=device-width, user-scalable=yes">
 	<meta name="mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<link rel="icon" sizes="196x196" href="/mail/img/mail_icon.png">
@@ -24,6 +24,29 @@
 			for(i in res){
 				var isHTML = res[i].bodyHTML != "" ? true : false;
 
+				var headerTab = $("<table>");
+				var row1 =  $("<tr/>");
+				row1.append($("<td/>", {html: "From:"}));
+				row1.append($("<td/>", {html: res[i].from}));
+
+				var row2 =  $("<tr/>");
+				row2.append($("<td/>", {html: "To:"}));
+				row2.append($("<td/>", {html: res[i].to}));
+
+				var row3 =  $("<tr/>");
+				row3.append($("<td/>", {html: "Subject:"}));
+				row3.append($("<td/>", {html: res[i].title}));
+
+				var att = $("<div/>");
+				for(var a in res[i].attachments){
+					att.append($("<a/>", {html: res[i].attachments[a].filename, href: "/request?module=mail&type=GetAttachment&file=" + res[i].attachments[a].downloadHash}));
+				}
+
+				var row4 =  $("<tr/>");
+				row4.append($("<td/>", {html: "Attachments:"}));
+				row4.append($("<td/>", {html: att, class: "mailattachments"}));
+
+					/*
 				var header = $("<div/>", {class: "mailheader"});
 				var to = $("<div/>", {html: "<span>To: </span>" + res[i].to});
 				var from = $("<div/>", {html: "<span>From: </span>" + res[i].from});
@@ -45,6 +68,14 @@
 				header.append(subject);
 				if(res[i].numAttachments > 0)
 					header.append(attachments);
+				*/
+
+				var header = $("<div/>", {class: "mailheader"});
+				headerTab.append(row1);
+				headerTab.append(row2);
+				headerTab.append(row3);
+				headerTab.append(row4);
+				header.append(headerTab);
 
 				var body = $("<div/>", {class: "mailbody" + (isHTML?"":" plain"), html: (isHTML ? res[i].bodyHTML : res[i].bodyPlain)});
 
@@ -52,7 +83,16 @@
 				container.append(header);
 				container.append(body);
 
+				container.click(function(e){
+					$(this).find(".mailbody").toggleClass("show");
+				})
+
 				$("#mails").append(container);
+
+				setTimeout(function(){
+					$(".mailcontainer:not(.show)").first().addClass("show");
+				}, (i * 100) + 1);
+
 				foundAny = true;
 			}
 
@@ -70,13 +110,14 @@
 </head>
 <body>
 	<div id="topmenu">
-		<a href="/mail/dev.html"><button>Inbox</button></a>
-		<a href="/mail/dev.html?spam=true"><button>Spam</button></a>
-		<a href="/user/login.html?redirectTo=/mail/dev.html"><button>Log in/out</button></a>
-		<a href="/mail/setup.html"><button>Setup</button></a>
+		<button onclick="window.location='/mail/dev.html'">Inbox</button><!--
+		--><button onclick="window.location='/mail/dev.html?spam=true'">Spam</button><!--
+		--><button onclick="window.location='/user/login.html?redirectTo=/mail/dev.html'">Log in/out</button><!--
+		--><button onclick="window.location='/mail/setup.html'">Setup</button><!--
+		-->
 	</div>
 	
 	<div id="errors"></div>
-	<div id="mails"></div>
+	<div id="mails" class="org"></div>
 </body>
 </html>

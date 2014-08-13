@@ -74,10 +74,11 @@
 </head>
 <body>
 	<div id="topmenu">
-		<a href="/mail/dev.html"><button>Inbox</button></a>
-		<a href="/mail/dev.html?spam=true"><button>Spam</button></a>
-		<a href="/user/login.html?redirectTo=/mail/setup.html"><button>Log in/out</button></a>
-		<a href="/mail/setup.html"><button>Setup</button></a>
+		   <button onclick="window.location='/mail/dev.html'">Inbox</button><!--
+		--><button onclick="window.location='/mail/dev.html?spam=true'">Spam</button><!--
+		--><button onclick="window.location='/user/login.html?redirectTo=/mail/dev.html'">Log in/out</button><!--
+		--><button onclick="window.location='/mail/setup.html'">Setup</button><!--
+		-->
 	</div>
 
 	<div id="errors"></div>

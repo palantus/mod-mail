@@ -1,9 +1,69 @@
+html{
+	background-color: #005588
+}
+
+body{
+	overflow-y: hidden;
+}
+
 #topmenu {
 	margin-bottom: 20px;
+	position: fixed;
+	top: 0px;
+	left: 0px;
+    
+    white-space: nowrap;
+    width: 100%;
+    /*background-color: lightgrey;*/
+	/*box-shadow: 2px 2px 10px #000; */
+	padding-bottom: 5px;
+	z-index: 100;
 }
+
+
+@media (max-width: 481px) {
+	#topmenu {
+		overflow-x: scroll;
+	}
+}
+
 #topmenu button {
 	width: 100px;
 	height: 50px;
+    white-space: normal;
+    padding: 0px;
+    background-color:#FFF;
+    border:0px solid #aaa;
+    padding-bottom:4px;
+    padding-left: 10px;
+    padding-right: 10px; 
+    padding-top: 4px; 
+    margin: 0px; 
+    /*border-radius: 4px 4px 4px 4px;*/
+    -moz-user-select: none; 
+    -webkit-user-select: none; 
+    -ms-user-select:none; 
+    user-select:none;
+    box-shadow: 2px 2px 10px #000;
+}
+
+#topmenu button:hover{
+	background-color:#f5f5f5; 
+	cursor: pointer;
+}
+
+#mails{
+	margin-top: 60px;
+	overflow-x: hidden;
+	overflow-y: scroll;
+	
+	position:absolute;
+	top: 0px;
+	bottom: 0px;
+	left: 0px;
+	right: 0px;
+	padding-left: 5px;
+	padding-right: 8px;
 }
 
 div.mailcontainer{
@@ -12,17 +72,16 @@ div.mailcontainer{
 	padding: 5px; 
 	box-shadow: 5px 5px 5px #000; 
 	margin-bottom: 20px;
+	overflow-x: auto;
 }
 div.mailcontainer div.mailbody{
 	margin-top: 10px;
 }
 div.mailcontainer .mailbody.plain{
-	white-space: pre;
+	white-space: pre-wrap;;
 }
 
-div.mailheader span{
-	width: 100px;
-	display: inline-block;
+div.mailheader table tr td:first-child{
 	font-weight: bold;
 }
 div.mailattachment{
@@ -34,11 +93,28 @@ div.mailattachment{
 	margin-right: 12px;
 	color: black;
 	text-decoration: none;
-	display: inline-block;
-}
-
-.mailattachments div {
-	display: inline;
 }
 
 #errors{color: red; margin: 5px;}
+
+
+
+/* Mail Transition */
+.mailcontainer{
+	-webkit-transition: left 0.5s; /* For Safari 3.1 to 6.0 */
+    transition: left 0.5s;
+    position: relative;
+    left: -1000px;
+}
+
+.mailcontainer.show{
+	left: 0px;
+}
+
+/* Body transition */
+div.mailcontainer div.mailbody{
+	display: none;
+}
+div.mailcontainer div.mailbody.show{
+	display: block;
+}
