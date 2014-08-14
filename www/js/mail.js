@@ -8,6 +8,8 @@ var page = 0;
 var gotMorePages = false;
 var MailPerpage = 10;
 
+var enableAnimations = (localStorage.enableAnimations == "yes");
+
 function reloadMails(){
 	request({module:"mail", type: "GetRecentMailList", isSpam: isSpamFolder}, function(res){
 		switchCardList(function(newId){
@@ -163,13 +165,12 @@ function showLogin(){
 function showSetup(){
 	switchCardList(function(newId){
 		var setupContainer = $("<div/>", {class:"cardlist", id: "cardlist" + newId})
+		$("body").append(setupContainer);
 
 		var setupCard = $("<div></div>", {class: "card", html: "<h2>Aliases</h2>"});
 		
 		setupCard.append($("<div></div>", {id: "tab" + newId}))
 		setupContainer.append(setupCard)
-
-		$("body").append(setupContainer);
 
 		var tableCreator = new TableCreator();
 		tableCreator.init({	
@@ -200,6 +201,20 @@ function showSetup(){
 		tableCreator.draw();
 
 		showNewCard(0);
+
+		var optionsCard = $("<div></div>", {class: "card", html: "<h2>Options</h2>"});
+		var enableAnimationsCheckbox = $("<input type='checkbox' id='enableAnimations'/>")
+		enableAnimationsCheckbox[0].checked = enableAnimations;
+		optionsCard.append(enableAnimationsCheckbox)
+		optionsCard.append("Enable animations")
+		enableAnimationsCheckbox.change(function(){
+			enableAnimations = this.checked
+			localStorage.enableAnimations = "yes";
+		})
+
+		setupContainer.append(optionsCard)
+
+		showNewCard(1);
 	})
 }
 
@@ -244,31 +259,47 @@ function switchCardList(callback){
 	var newContainerId = nextContainerId;
 	nextContainerId++;
 
-	var i = 0;
 	var containerId = "#cardlist" + (nextContainerId - 2);
-	$(containerId + " .card").each(function(){
+
+	if(enableAnimations){
+		$(containerId + " .card").addClass("animate");
+
+		var i = 0;
+		$(containerId + " .card").each(function(){
+			setTimeout(function(){
+				$(containerId + " .card:not(.hide)").first().addClass("hide");
+			}, (i * 70) + 1);
+			i++;
+		});
+
 		setTimeout(function(){
-			$(containerId + " .card:not(.hide)").first().addClass("hide");
-		}, (i * 100) + 1);
-		i++;
-	});
+			$(containerId).remove();
+		}, Math.max(500, (i * 70) + 1))
 
-	setTimeout(function(){
+		setTimeout(function(){
+			callback(newContainerId);
+		}, 70)
+	} else {
 		$(containerId).remove();
-	}, Math.max(500, (i * 100) + 1))
-
-	setTimeout(function(){
 		callback(newContainerId);
-	}, 100)
+	}
 }
 
 function showNewCard(cardNum, callback){
 	var containerId = "#cardlist" + (nextContainerId - 1);
-	setTimeout(function(){
-		$(containerId + " .card:not(.show)").first().addClass("show");
+
+	if(enableAnimations) {
+		$(containerId + " .card").addClass("animate");
+
+		setTimeout(function(){
+			$(containerId + " .card:not(.show)").first().addClass("show");
+			if(typeof callback === "function")
+				callback(cardNum);
+		}, (cardNum * 70) + 50);
+	} else {
 		if(typeof callback === "function")
 			callback(cardNum);
-	}, (cardNum * 100) + 50);
+	}
 }
 
 function showError(error){
