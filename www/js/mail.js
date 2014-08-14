@@ -209,7 +209,7 @@ function showSetup(){
 		optionsCard.append("Enable animations")
 		enableAnimationsCheckbox.change(function(){
 			enableAnimations = this.checked
-			localStorage.enableAnimations = "yes";
+			localStorage.enableAnimations = (enableAnimations == true ? "yes" : "no");
 		})
 
 		setupContainer.append(optionsCard)
