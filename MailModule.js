@@ -86,13 +86,23 @@ MailModule.prototype.onMessage = function (req, callback, res) {
 			}
 			break;
 		case "DeleteMail" :
-			this.fw.modules["user"].hasPermission(session.sessionId, "admin", function(hasPermission){
-				if(hasPermission){
-					t.deleteMail(req.body.mailId, function(){
-						callback({success: true})
-					})
-				}
-			});
+			this.getUserInbox.call(this, session.userId, function(inboxId){
+				client.zscore("inbox:" + inboxId + ":mails", req.body.mailId, function(err, score){
+					if(score){
+						t.deleteMail(req.body.mailId, function(){
+							callback({success: true})
+						})
+					} else {
+						this.fw.modules["user"].hasPermission(session.sessionId, "admin", function(hasPermission){
+							if(hasPermission){
+								t.deleteMail(req.body.mailId, function(){
+									callback({success: true})
+								})
+							}
+						});
+					}
+				})
+			})
 			break;
 		case "GetAliases" :
 			client.smembers("user:" + session.userId + ":mailaliases", function(err, res){
@@ -205,19 +215,6 @@ MailModule.prototype.deleteMail = function (mailId, callback) {
 		callback("Not a number")
 		return;
 	}
-	/*
-	client.hgetall("mail:" + mailId, function(err, mail){
-		if(mail === undefined)
-			return;
-
-		client.del("mail:" + mailId);
-		client.del("mail:" + mailId + ":raw");
-		if(!isNaN(mail.numAttachments)){
-		for(var i = 1; i <= mail.numAttachments; i++)
-			client.del("mail:" + mailId + ":attachment:" + i)
-		}
-	})
-	*/
 
 	client.smembers("mail:" + mailId + ":inboxes", function(err, inboxes){
 		var multi = client.multi();
