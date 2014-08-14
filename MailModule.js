@@ -85,6 +85,15 @@ MailModule.prototype.onMessage = function (req, callback, res) {
 				});
 			}
 			break;
+		case "DeleteMail" :
+			this.fw.modules["user"].hasPermission(session.sessionId, "admin", function(hasPermission){
+				if(hasPermission){
+					t.deleteMail(req.body.mailId, function(){
+						callback({success: true})
+					})
+				}
+			});
+			break;
 		case "GetAliases" :
 			client.smembers("user:" + session.userId + ":mailaliases", function(err, res){
 				if(err)
@@ -146,6 +155,9 @@ MailModule.prototype.getMails = function (inbox, start, end, callback) {
 			/* Attachments */
 			var multi = client.multi();
 			for(i in mails){
+				if(mails[i] === undefined)
+					continue;
+
 				mails[i].attachments = [];
 
 				if(!isNaN(mails[i].numAttachments)){
@@ -186,6 +198,49 @@ MailModule.prototype.getUserInbox = function (userId, callback) {
 			})
 		}
 	});
+}
+
+MailModule.prototype.deleteMail = function (mailId, callback) {
+	if(isNaN(mailId)){
+		callback("Not a number")
+		return;
+	}
+	/*
+	client.hgetall("mail:" + mailId, function(err, mail){
+		if(mail === undefined)
+			return;
+
+		client.del("mail:" + mailId);
+		client.del("mail:" + mailId + ":raw");
+		if(!isNaN(mail.numAttachments)){
+		for(var i = 1; i <= mail.numAttachments; i++)
+			client.del("mail:" + mailId + ":attachment:" + i)
+		}
+	})
+	*/
+
+	client.smembers("mail:" + mailId + ":inboxes", function(err, inboxes){
+		var multi = client.multi();
+
+		if(inboxes && inboxes.length > 0){
+			for(var i in inboxes)
+				multi.zrem("inbox:" + inboxes[i] + ":mails", mailId);
+		} else {
+			console.log("no inboxes")
+			client.keys("inbox:*:mails", function(err, inboxKeys){
+				console.log(inboxKeys)
+				for(var i in inboxKeys)
+					client.zrem(inboxKeys[i], mailId);
+			})
+		}
+		
+		multi.del("mail:" + mailId)
+		multi.eval("return redis.call('del', unpack(redis.call('keys', ARGV[1])))", 0, "mail:" + mailId + ":*")
+		multi.exec(function(){
+			callback();
+		});
+	})
+	client.zrem("inbox:spam", mailId);
 }
  
 module.exports = MailModule;

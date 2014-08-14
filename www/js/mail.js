@@ -65,15 +65,41 @@ function refreshMails(containerId, mails){
 
 		var body = $("<div/>", {class: "mailbody" + (isHTML?"":" plain"), html: (isHTML ? mails[i].bodyHTML : mails[i].bodyPlain)});
 
-		var singleMailContainer = $("<div/>", {class: "card"});
-		singleMailContainer.append(header);
-		singleMailContainer.append(body);
+		/* Back side of card */
+		var back = $("<div/>", {class: "cardback"})
+		back.hide();
 
-		singleMailContainer.click(function(e){
-			$(this).find(".mailbody").toggleClass("show");
+		var delBtn = $("<button/>", {class: "tcbutton", html: "Delete mail"})
+		delBtn.click(function(){
+			if(confirm("Are you sure that you want to delete this mail permanently?")) {
+				request({module:"mail", type: "DeleteMail", mailId: $(this).parents(".card").first().data("MailId")}, function(){
+					reloadMails()
+				})
+			}
+		})
+		back.append(delBtn)
+
+		/* Button to flip card */
+		var flipBtn = $("<img/>", {src: "img/flip.png", class: "flipbutton", html: "flip"})
+		flipBtn.click(function(){
+			$(this).parent().find(".cardback").toggle();
+			$(this).parent().find(".mailbody,.mailheader").toggleClass("invisible");
 		})
 
-		mailList.append(singleMailContainer);
+		/* Adding it all to the card */
+		var card = $("<div/>", {class: "card"});
+		card.data("MailId", mails[i].id)
+		card.append(header);
+		card.append(body);
+		card.append(flipBtn)
+		card.append(back)
+
+		card.click(function(e){
+			if(e.target.tagName == "DIV" || e.target.tagName == "TD")
+				$(this).find(".mailbody").toggleClass("show");
+		})
+
+		mailList.append(card);
 
 		showNewCard(i);
 
@@ -305,6 +331,11 @@ function showNewCard(cardNum, callback){
 function showError(error){
 	$("#errors").removeClass("hide");
 	$("#errors").html(error);
+}
+
+function setSelectedButton(button){
+	$("#topmenu button").css("text-decoration", "none");
+	button.css("text-decoration", "underline");
 }
 
 reloadMails();
