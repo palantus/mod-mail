@@ -25,6 +25,7 @@ function reloadMails(){
 }
 
 function refreshMails(containerId, mails){
+	var t = this;
 	var mailList = $("<div/>", {class:"cardlist", id: "cardlist" + containerId})
 	$("body").append(mailList);
 
@@ -69,19 +70,10 @@ function refreshMails(containerId, mails){
 		var back = $("<div/>", {class: "cardback"})
 		back.hide();
 
-		var delBtn = $("<button/>", {class: "tcbutton", html: "Delete mail"})
-		delBtn.click(function(){
-			if(confirm("Are you sure that you want to delete this mail permanently?")) {
-				request({module:"mail", type: "DeleteMail", mailId: $(this).parents(".card").first().data("MailId")}, function(){
-					reloadMails()
-				})
-			}
-		})
-		back.append(delBtn)
-
 		/* Button to flip card */
 		var flipBtn = $("<img/>", {src: "img/flip.png", class: "flipbutton", html: "flip"})
 		flipBtn.click(function(){
+			t.showMailBackSide.call($(this).parent().find(".cardback"))
 			$(this).parent().find(".cardback").toggle();
 			$(this).parent().find(".mailbody,.mailheader").toggleClass("invisible");
 		})
@@ -106,8 +98,45 @@ function refreshMails(containerId, mails){
 		foundAny = true;
 	}
 
-	if(!foundAny)
-		mailList.append("<h4>Empty inbox...</h4>");
+	if(!foundAny){
+		var card = $("<div/>", {class: "card", html: "<h2>No mails</h2>This mailbox is empty..."});
+		mailList.append(card);
+		showNewCard(0);
+	}
+}
+
+function showMailBackSide(){
+	this.empty();
+	var btn = null;
+
+	/* Delete mail */
+	var btn = $("<button/>", {class: "tcbutton", html: "Delete"})
+	btn.click(function(){
+		if(confirm("Are you sure that you want to delete this mail permanently?")) {
+			request({module:"mail", type: "DeleteMail", mailId: $(this).parents(".card").first().data("MailId")}, function(){
+				reloadMails()
+			})
+		}
+	})
+	this.append(btn)
+
+	/* Tag mail */
+	/*
+	var btn = $("<button/>", {class: "tcbutton", html: "Tag"})
+	this.append(btn)
+	*/
+
+	/* Archive mail */
+	var btn = $("<button/>", {class: "tcbutton", html: "Archive"})
+	this.append(btn)
+
+	/* Forward mail */
+	var btn = $("<button/>", {class: "tcbutton", html: "Forward"})
+	this.append(btn)
+
+	/* Reply */
+	var btn = $("<button/>", {class: "tcbutton", html: "Reply"})
+	this.append(btn)
 }
 
 function showLogin(){
