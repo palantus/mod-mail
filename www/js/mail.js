@@ -109,8 +109,20 @@ function showMailBackSide(){
 	this.empty();
 	var btn = null;
 
+	/* Archive mail */
+	btn = $("<button/>", {class: "tcbutton", html: "Archive"})
+	this.append(btn)
+
+	/* Reply */
+	btn = $("<button/>", {class: "tcbutton", html: "Reply"})
+	this.append(btn)
+
+	/* Forward mail */
+	btn = $("<button/>", {class: "tcbutton", html: "Forward"})
+	this.append(btn)
+
 	/* Delete mail */
-	var btn = $("<button/>", {class: "tcbutton", html: "Delete"})
+	btn = $("<button/>", {class: "tcbutton", html: "Delete"})
 	btn.click(function(){
 		if(confirm("Are you sure that you want to delete this mail permanently?")) {
 			request({module:"mail", type: "DeleteMail", mailId: $(this).parents(".card").first().data("MailId")}, function(){
@@ -125,18 +137,6 @@ function showMailBackSide(){
 	var btn = $("<button/>", {class: "tcbutton", html: "Tag"})
 	this.append(btn)
 	*/
-
-	/* Archive mail */
-	var btn = $("<button/>", {class: "tcbutton", html: "Archive"})
-	this.append(btn)
-
-	/* Forward mail */
-	var btn = $("<button/>", {class: "tcbutton", html: "Forward"})
-	this.append(btn)
-
-	/* Reply */
-	var btn = $("<button/>", {class: "tcbutton", html: "Reply"})
-	this.append(btn)
 }
 
 function showLogin(){
